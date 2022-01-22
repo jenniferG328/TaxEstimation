@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Student Tax Estimation
+    </title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <form onsubmit="event.preventDefault();onFormSubmit();" autocomplete="off">
+                <div>
+                    <label>Are you resident ailien?(Yes or No)* </label> <label class="validation-error hide"
+                                                                                id="residentValidationError"> This field
+                    is required.</label>
+                    <input type="text" name="resident" id="resident">
+                </div>
+                <div>
+                    <label>Marital Satus(Single,Maried File Jointly,Maried File Separately)</label>
+                    <input type="text" name="maritalstatus" id="maritalstatus">
+                </div>
+                <div>
+                    <label>Age</label>
+                    <input type="number" name="age" id="age">
+                </div>
+
+                <div>
+                    <label>Are you been claimed as a dependent of others?(Yes or No)</label>
+                    <input type="text" name="dependentof" id="dependentof">
+                </div>
+                <div>
+                    <label>Wage earned for this tax period</label>
+                    <input type="number" name="wage" id="wage">
+                </div>
+                <div>
+                    <label>Estimated Interest Income Earned for this tax period</label>
+                    <input type="number" name="interestincome" id="interestincome">
+                </div>
+                <div>
+                    <label>Tuition paid by yourself for this tax period</label>
+                    <input type="number" name="tuition" id="tuition">
+                </div>
+                <div>
+                    <label>Student Loan interest that paid by yourself for this tax period</label>
+                    <input type="number" name="loanInt" id="loanInt">
+                </div>
+
+                <div class="form-action-buttons">
+
+                    <input type="submit" value="Submit">
+                </div>
+
+
+            </form>
+
+        </td>
+
+        <td>
+            <table class="list" id="result">
+                <thead>
+                <tr>
+                    <th>Estimeated result based on information you provided:</th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+        </td>
+    <tr>
+        <p id="insert"></p>
+
+</table>
+<script src="script.js"></script>
+</body>
+</html>
