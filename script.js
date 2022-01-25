@@ -16,26 +16,27 @@ function readFormData(){
     formData["interestincome"] = document.getElementById("interestincome").value;
     formData["tuition"] = document.getElementById("tuition").value;
     formData["loanInt"] = document.getElementById("loanInt").value;
-//    formData["withholding"] = document.getElementById("withholing").value;
+    formData["withholding"] = document.getElementById("withholing").value;
 
     return formData;
 }
 
 function insertResult(data){
-//    var totalIncome = data.wage + data.interestincome-data.loanInt;
-//    var tax;
-//    if (data.resident.toLowerCase()="no"){
-//        tax = totalIncome*0.3;
-//        document.getElementById("result").Value= tax;
-//    }
-//    else{
-//        if(data.dependentof.toLowerCase()="yes"){
-//            document.getElementById("result").Value= "No need to file tax return"
-//        }
-//        else{
-//
-//        }
-//    }
+    var totalIncome = data.wage + data.interestincome-data.loanInt;
+    var tax;
+    if (data.resident.toLowerCase()="no"){
+        var incometax = totalIncome*0.3;
+        tax = incometax-data.withholding;
+    }
+    else{
+       if(data.dependentof.toLowerCase()="yes"){
+        tax = "No need to file tax return for this period"
+       }
+       else{
+
+        function tuitioncredit(totalIncome, data);
+       }
+   }
 
     var table = document.getElementById("result").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.length);
@@ -77,4 +78,45 @@ function validate(){
             document.getElementById("residentValidationError").classList.add("hide");
     }
     return isValid;
+}
+
+function tuitioncredit(income, data){
+    var ssd;
+    var agi;
+    var incometax;
+    if (data.maritalstatus.toLowerCase()= "single" ){
+        ssd=12550;
+        agi = income-ssd;
+        incometax=incometaxS(agi);
+    }
+    else if(data.maritalstatus.toLowerCase()="maried file jointly"){
+        ssd= 25100;
+        agi = income-ssd;
+        incometax=incometaxMFJ(agi);
+    }
+    else if (data.maritalstatus.toLowerCase()="maried file separately"){
+        ssd =12550;
+        agi = income-ssd;
+        incometax=incometaxMFS(agi);
+    }
+   
+}
+
+function incometaxS(taxableincome){
+    var owentax;
+    if (taxableincome <=9950 ){
+        owentax = taxableincome * 0.1;
+    }
+    if (taxableincome >9950 && taxableincome <= 40525){
+        owentax = 995 + (taxableincome-9950)*0.12;
+    }
+    
+}
+
+function incometaxMFJ(taxableincome){
+
+}
+
+function incometaxMFS(taxableincome){
+
 }
