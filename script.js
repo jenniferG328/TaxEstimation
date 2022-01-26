@@ -1,6 +1,7 @@
 function onFormSubmit(){
     if(validate()){
     var formData = readFormData();
+    var result = resulttax(formData);
     insertResult(formData);
     resetForm();
     }
@@ -16,27 +17,48 @@ function readFormData(){
     formData["interestincome"] = document.getElementById("interestincome").value;
     formData["tuition"] = document.getElementById("tuition").value;
     formData["loanInt"] = document.getElementById("loanInt").value;
-    formData["withholding"] = document.getElementById("withholing").value;
-
+    formData["withholding"] = document.getElementById("withholding").value;
     return formData;
 }
 
-function insertResult(data){
+function resulttax(data){
     var totalIncome = data.wage + data.interestincome-data.loanInt;
     var tax;
-    if (data.resident.toLowerCase()="no"){
-        var incometax = totalIncome*0.3;
+    var incometax;
+    var tuitioncredits;
+    if (data.resident.toLowerCase()=="no"){
+        incometax = (totalIncome-5000)*0.3;
         tax = incometax-data.withholding;
+        
     }
     else{
-       if(data.dependentof.toLowerCase()="yes"){
+       if(data.dependentof.toLowerCase()=="yes"){
         tax = "No need to file tax return for this period"
+        
        }
        else{
-
-        function tuitioncredit(totalIncome, data);
+        tuitioncredits = tuitioncredit(totalIncome, data);
+        if (data.maritalstatus.toLowerCase()== "single" ){
+            ssd=12550;
+            agi = income-ssd;
+            incometax=incometaxS(agi);
+        }
+        else if(data.maritalstatus.toLowerCase()== "maried file jointly"){
+            ssd= 25100;
+            agi = income-ssd;
+            incometax=incometaxMFJ(agi);
+        }
+        else if (data.maritalstatus.toLowerCase()== "maried file separately"){
+            ssd =12550;
+            agi = income-ssd;
+            incometax=incometaxMFS(agi);
+        }
+        tax = incometax-tuitioncredits-data.withholding;
+        
        }
    }
+}
+function insertResult(data){
 
     var table = document.getElementById("result").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.length);
@@ -84,39 +106,105 @@ function tuitioncredit(income, data){
     var ssd;
     var agi;
     var incometax;
-    if (data.maritalstatus.toLowerCase()= "single" ){
+    var refundcredit;
+    var nonrefundcredit;
+    var totalcredit;
+    // calculate agi and income tax
+    if (data.maritalstatus.toLowerCase()== "single" ){
         ssd=12550;
         agi = income-ssd;
         incometax=incometaxS(agi);
     }
-    else if(data.maritalstatus.toLowerCase()="maried file jointly"){
+    else if(data.maritalstatus.toLowerCase()== "maried file jointly"){
         ssd= 25100;
         agi = income-ssd;
         incometax=incometaxMFJ(agi);
     }
-    else if (data.maritalstatus.toLowerCase()="maried file separately"){
+    else if (data.maritalstatus.toLowerCase()== "maried file separately"){
         ssd =12550;
         agi = income-ssd;
         incometax=incometaxMFS(agi);
     }
-   
+    // situtations that not qualified for this credit
+    if (agi >= 90000 && data.maritalstatus.toLowerCase()=="single"){
+        totalcredit = 0;
+        return totalcredit;
+    }
+    else if( agi >= 900000 && data.maritalstatus.toLowerCase()== "maried file separately"){
+        totalcredit = 0;
+        return totalcredit;
+    }
+    else if ( agi >= 180000 && data.maritalstatus.toLowerCase()== "maried file jointly"){
+        totalcredit = 0;
+        return totalcredit;
+    }
+    // divide user as two kinds, one has qualified tuition of more than $40000 and the other has qualified tution less than $4000. then calculate refundable tax credit and non refundable credit based on agi. 
+    if (data.tuition >=4000){
+        refundcredit = 1000;
+        nonrefundcredit = nonrefundablecredit();
+    }
 }
 
 function incometaxS(taxableincome){
     var owentax;
     if (taxableincome <=9950 ){
         owentax = taxableincome * 0.1;
+        return owentax;
     }
     if (taxableincome >9950 && taxableincome <= 40525){
         owentax = 995 + (taxableincome-9950)*0.12;
+        return owentax;
     }
-    
+    if (taxableincome >40525 && taxableincome <=86375){
+        owentax = 4664 + (taxableincome-40525)*0.22;
+        return owentax;
+    }
+    if (taxableincome>86375 && taxableincome <90000){
+        owentax = 14751 + (taxableincome-86375)*0.24;
+        return owentax;
+    }
 }
 
 function incometaxMFJ(taxableincome){
-
+    var owentax;
+    if (taxableincome <=19900 ){
+        owentax = taxableincome * 0.1;
+        return owentax;
+    }
+    if (taxableincome >19900 && taxableincome <= 81050){
+        owentax = 1990 + (taxableincome-19900)*0.12;
+        return owentax;
+    }
+    if (taxableincome >81050 && taxableincome <=172750){
+        owentax = 9328 + (taxableincome-81050)*0.22;
+        return owentax;
+    }
+    if (taxableincome>172750 && taxableincome <180000){
+        owentax = 29502 + (taxableincome-172750)*0.24;
+        return owentax;
+    }
 }
 
 function incometaxMFS(taxableincome){
+    var owentax;
+    if (taxableincome <=9950 ){
+        owentax = taxableincome * 0.1;
+        return owentax;
+    }
+    if (taxableincome >9950 && taxableincome <= 40525){
+        owentax = 995 + (taxableincome-9950)*0.12;
+        return owentax;
+    }
+    if (taxableincome >40525 && taxableincome <=86375){
+        owentax = 4664 + (taxableincome-40525)*0.22;
+        return owentax;
+    }
+    if (taxableincome>86375 && taxableincome <90000){
+        owentax = 14751 + (taxableincome-86375)*0.24;
+        return owentax;
+    }
+}
 
+function nonrefundablecredit(){
+    
 }

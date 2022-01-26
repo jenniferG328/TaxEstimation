@@ -1,5 +1,14 @@
+body{
+    background-image: url('taxpic.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
 body > table{
     width: 80%;
+    margin: 40px auto;
+    background: rgb(124, 154, 167);
 }
 table{
     border-collapse: collapse;
