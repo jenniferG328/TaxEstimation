@@ -1,8 +1,11 @@
 function onFormSubmit(){
     if(validate()){
     var formData = readFormData();
-    var result = resulttax(formData);
-    insertResult(formData);
+    // var result = resulttax(formData);
+    var result = {};
+    result["taxoutcome"]=resulttax(formData);
+    // result["taxoutcome"] = 'ss';
+    insertResult(result);
     resetForm();
     }
 }
@@ -24,17 +27,22 @@ function readFormData(){
 function resulttax(data){
     var totalIncome = data.wage + data.interestincome-data.loanInt;
     var tax;
+    // var data={};
     var incometax;
     var tuitioncredits;
+
     if (data.resident.toLowerCase()=="no"){
         incometax = (totalIncome-5000)*0.3;
         tax = incometax-data.withholding;
-        
+        // data["taxoutcome"]=tax;
+        return tax;
     }
-    else{
+    else if (data.resident.toLowerCase()=="yes"){
        if(data.dependentof.toLowerCase()=="yes"){
-        tax = "No need to file tax return for this period"
-        
+        tax = "No need to file tax return for this period";
+        // data["taxoutcome"]=tax;
+        // return data;
+        return tax;
        }
        else{
         tuitioncredits = tuitioncredit(totalIncome, data);
@@ -54,16 +62,17 @@ function resulttax(data){
             incometax=incometaxMFS(agi);
         }
         tax = incometax-tuitioncredits-data.withholding;
-        
+        // return data;
+        return tax;
        }
    }
 }
-function insertResult(data){
+function insertResult(result){
 
     var table = document.getElementById("result").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.length);
     cell1 = newRow.insertCell(0);
-    cell1.innerHTML = data.resident;
+    cell1.innerHTML = result.taxoutcome;
     cell2 = newRow.insertCell(1);
     cell2.innerHTML = '<a onClick= "onDelete(this)">Delete</a>';
 }
@@ -141,7 +150,21 @@ function tuitioncredit(income, data){
     // divide user as two kinds, one has qualified tuition of more than $40000 and the other has qualified tution less than $4000. then calculate refundable tax credit and non refundable credit based on agi. 
     if (data.tuition >=4000){
         refundcredit = 1000;
-        nonrefundcredit = nonrefundablecredit();
+        nonrefundcredit = min(incometax,1500);
+        totalcredit = refundcredit+nonrefundcredit;
+        return totalcredit;
+    }
+    else if (data.tuition >=2000 && data.tuition <4000){
+        refundcredit = (2000+(data.tuition-2000)*0.25)*0.4;
+        nonrefundcredit = min(incometax,(2000+(data.tuition-2000)*0.25)-refundcredit);
+        totalcredit = refundcredit+nonrefundcredit;
+        return totalcredit;
+    }
+    else if (data.tuition <2000){
+        refundcredit = data.tuition * 0.4;
+        // nonrefundcredit = min(incometax, (data.tuition-refundcredit));
+        totalcredit = refundcredit+nonrefundcredit;
+        return totalcredit;
     }
 }
 
